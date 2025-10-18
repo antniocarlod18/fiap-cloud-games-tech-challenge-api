@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="FiapCloudGamesTechChallenge.Api/FiapCloudGamesTechChallenge.Api.csproj" />
+  <Project Path="FiapCloudGamesTechChallenge.Application/FiapCloudGamesTechChallenge.Application.csproj" />
+  <Project Path="FiapCloudGamesTechChallenge.Domain/FiapCloudGamesTechChallenge.Domain.csproj" />
+  <Project Path="FiapCloudGamesTechChallenge.Infra.Data/FiapCloudGamesTechChallenge.Infra.Data.csproj" />
+  <Project Path="FiapCloudGamesTechChallenge.Test/FiapCloudGamesTechChallenge.Test.csproj" />
+</Solution>
