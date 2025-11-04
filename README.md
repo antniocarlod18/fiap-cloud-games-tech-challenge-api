@@ -46,7 +46,7 @@ Antes de rodar o projeto, verifique se possui instalado:
    CREATE DATABASE FiapCloudGames;
 
 2. Configure o arquivo appsettings.Development.json localizado em \FiapCloudGamesTechChallenge.Api\appsettings.Development.json:
-
+```json
 {
   "Logging": {
     "LogLevel": {
@@ -63,7 +63,7 @@ Antes de rodar o projeto, verifique se possui instalado:
     "Audience": "https://localhost:7121/"
   }
 }
-
+```
 3. Aplique as migrations do Entity Framework Core com os comandos:
 
 dotnet ef database update
