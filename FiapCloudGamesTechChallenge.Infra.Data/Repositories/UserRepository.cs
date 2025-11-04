@@ -32,10 +32,12 @@ public class UserRepository : Repository<User>, IUserRepository
     public async Task<User?> GetDetailedByIdAsync(Guid userId)
     {
         return await _context.Users
-            .AsNoTracking()
             .Include(u => u.GameCart)
+                .ThenInclude(g => g.Promotions)
             .Include(u => u.GameLibrary)
             .Include(u => u.Orders)
+                .ThenInclude(ug => ug.Games)
+                    .ThenInclude(og => og.Game)
             .FirstOrDefaultAsync(u => u.Id == userId);
     }
 }

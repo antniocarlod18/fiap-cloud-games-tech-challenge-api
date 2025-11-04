@@ -3,9 +3,11 @@ using FiapCloudGamesTechChallenge.Api.Endpoints;
 using FiapCloudGamesTechChallenge.Application.Middlewares;
 using FiapCloudGamesTechChallenge.Application.Services;
 using FiapCloudGamesTechChallenge.Application.Services.Interfaces;
+using FiapCloudGamesTechChallenge.Application.Validators;
 using FiapCloudGamesTechChallenge.Domain.Repositories;
 using FiapCloudGamesTechChallenge.Infra.Data.Context;
 using FiapCloudGamesTechChallenge.Infra.Data.Repositories;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -63,15 +65,11 @@ builder.Services.AddAuthorization(options =>
         policy.Requirements.Add(new SameUserRequirement()));
 });
 builder.Services.AddSingleton<IAuthorizationHandler, SameUserHandler>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserRequestDtoValidator>();
 
 var app = builder.Build();
 
-app.MapGameEndpoints();
-app.MapAuditEndpoints();
-app.MapOrderEndpoints();
-app.MapPromotionEndpoints();
-app.MapUserEndpoints();
-app.MapAuthEndpoints();
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -81,9 +79,15 @@ if (app.Environment.IsDevelopment())
 }
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseMiddleware<ExceptionHandlerMiddleware>();
-app.UseExceptionHandler("/Error");
-app.UseStatusCodePages();
+
 app.UseHsts();
 app.UseHttpsRedirection();
+
+app.MapGameEndpoints();
+app.MapAuditEndpoints();
+app.MapOrderEndpoints();
+app.MapPromotionEndpoints();
+app.MapUserEndpoints();
+app.MapAuthEndpoints();
+
 app.Run();

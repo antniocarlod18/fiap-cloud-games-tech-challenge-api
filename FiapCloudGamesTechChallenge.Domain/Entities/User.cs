@@ -38,6 +38,7 @@ public class User : EntityBase
     public void LockUser()
     {
         Active = false;
+        HashPassword = "";
         DateUpdated = DateTime.UtcNow;
     }
 
@@ -55,7 +56,7 @@ public class User : EntityBase
 
     public void AddToCart(Game game)
     {
-        if (GameLibrary.Contains(game) || GameCart.Contains(game))
+        if (GameLibrary.Any(g => g.Id == game.Id) || GameCart.Any(g => g.Id == game.Id))
             throw new InvalidOperationAddingGameToCartException();
 
         GameCart.Add(game);       
@@ -63,9 +64,10 @@ public class User : EntityBase
 
     public void RemoveFromCart(Game game)
     {
-        if (GameCart.Contains(game))
+        var gameToRemove = GameCart.FirstOrDefault(g => g.Id == game.Id);
+        if (gameToRemove != null)
         {
-            GameCart.Remove(game);
+            GameCart.Remove(gameToRemove);
         }
     }
 
@@ -78,7 +80,7 @@ public class User : EntityBase
     {
         foreach (var game in games)
         {
-            if (!GameLibrary.Contains(game))
+            if (!GameLibrary.Any(g => g.Id == game.Id))
             {
                 GameLibrary.Add(game);
             }
@@ -89,7 +91,7 @@ public class User : EntityBase
     {
         foreach (var game in games)
         {
-            if (!GameLibrary.Contains(game) && !GameCart.Contains(game))
+            if (!GameLibrary.Any(g => g.Id == game.Id) && !GameCart.Any(g => g.Id == game.Id))
             {
                 GameCart.Add(game);
             }
@@ -100,9 +102,10 @@ public class User : EntityBase
     {
         foreach (var game in games)
         {
-            if (GameLibrary.Contains(game))
+            var gameToRemove = GameLibrary.FirstOrDefault(g => g.Id == game.Id);
+            if (gameToRemove != null)
             {
-                GameLibrary.Remove(game);
+                GameLibrary.Remove(gameToRemove);
             }
         }
     }

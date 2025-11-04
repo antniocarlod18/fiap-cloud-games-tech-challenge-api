@@ -10,5 +10,7 @@ public interface IGameService
     Task<IList<GameResponseDto?>> GetAllAvailableAsync();
     Task<GameResponseDto> GetByTitleAsync(string title);
     Task<IList<GameResponseDto?>> GetByGenreAsync(string genre);
-    Task<GameResponseDto?> UpdateAsync(Guid id, GameUpdateRequestDto gameRequestDto);
+    Task<GameResponseDto?> UpdateAsync(Guid id, GameRequestDto gameRequestDto);
+    Task<IList<GameResponseDto?>> GetAllAsync();
+    Task DeleteAsync(Guid id);
 }

@@ -5,13 +5,13 @@ using System.Net;
 namespace FiapCloudGamesTechChallenge.Domain.Exceptions
 {
     [Serializable]
-    public class ResourceNotFoundException<T> : BaseException
+    public class ResourceNotFoundException : BaseException
     {
-        private static string _customMessage = "Oops! {} not found or may have been removed.";
+        private static string _customMessage = "Oops! {0} not found or may have been removed.";
         public override HttpStatusCode StatusCode { get; set; } = HttpStatusCode.NotFound;
         public override LogLevel LogLevel { get; set; } = LogLevel.Warning;
 
-        public ResourceNotFoundException() : base(string.Format(_customMessage, nameof(T)))
+        public ResourceNotFoundException(string resourceName) : base(string.Format(_customMessage, resourceName))
         {
         }
     }

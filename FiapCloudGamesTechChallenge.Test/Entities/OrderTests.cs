@@ -26,7 +26,7 @@ public class OrderTests
 
         Assert.NotEmpty(order.Games);
         Assert.Equal(OrderStatusEnum.WaitingForPayment, order.Status);
-        Assert.Equal(0, user.GameCart.Count); // cart should be cleared
+        Assert.Equal(0, user.GameCart.Count); 
     }
 
     [Fact]

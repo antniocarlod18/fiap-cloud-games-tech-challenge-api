@@ -1,6 +1,10 @@
 
 using FiapCloudGamesTechChallenge.Application.Dtos;
 using FiapCloudGamesTechChallenge.Application.Services.Interfaces;
+using FluentValidation;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
 
 namespace FiapCloudGamesTechChallenge.Api.Endpoints;
 
@@ -14,8 +18,8 @@ public static class UserEndpoints
         endpoints.MapGet("/users/{userId}", Getsync)
             .RequireAuthorization("SameUserOrAdmin"); 
 
-        endpoints.MapPut("/users/{userId}/unlock", UnlockAsync)
-            .RequireAuthorization("SameUserOrAdmin");
+        endpoints.MapPut("/users/unlock", UnlockAsync)
+            .RequireAuthorization(policy => policy.RequireRole("LockUser"));
 
         endpoints.MapPut("/users/{userId}/make-admin", MakeAdminAsync)
             .RequireAuthorization(policy => policy.RequireRole("Admin"));
@@ -30,7 +34,7 @@ public static class UserEndpoints
             .RequireAuthorization(policy => policy.RequireRole("Admin"));
 
         endpoints.MapPut("/users/{userId}", UpdateAsync)
-            .RequireAuthorization(policy => policy.RequireRole("Admin"));
+            .RequireAuthorization("SameUserOrAdmin");
 
         endpoints.MapPost("/users/{userId}/games/{gameId}/cart", AddGameToCart)
             .RequireAuthorization("SameUserOrAdmin"); 
@@ -41,8 +45,15 @@ public static class UserEndpoints
         return endpoints;
     }
 
-    public static async Task<IResult> AddAsync(UserRequestDto dto, IUserService service)
+    public static async Task<IResult> AddAsync(UserRequestDto dto, IUserService service, IValidator<UserRequestDto> validator)
     {
+        var validationResult = await validator.ValidateAsync(dto);
+
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
+
         var created = await service.AddAsync(dto);
         return Results.Created("/users", created);
     }
@@ -52,8 +63,16 @@ public static class UserEndpoints
         return Results.Ok(await service.GetAsync(userId));
     }
 
-    public static async Task<IResult> UnlockAsync(Guid userId, UserUnlockRequestDto userUnlockRequestDto, IUserService service)
+    public static async Task<IResult> UnlockAsync(UserUnlockRequestDto userUnlockRequestDto, HttpContext context, IUserService service, IValidator<UserUnlockRequestDto> validator)
     {
+        var validationResult = await validator.ValidateAsync(userUnlockRequestDto);
+
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
+
+        Guid.TryParse(context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId);
         return Results.Ok(await service.UnlockAsync(userId, userUnlockRequestDto));
     }
 
@@ -78,8 +97,15 @@ public static class UserEndpoints
         return Results.Ok();
     }
 
-    public static async Task<IResult> UpdateAsync(Guid userId, UserUpdateRequestDto dto, IUserService service)
+    public static async Task<IResult> UpdateAsync(Guid userId, UserUpdateRequestDto dto, IUserService service, IValidator<UserUpdateRequestDto> validator)
     {
+        var validationResult = await validator.ValidateAsync(dto);
+
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
+
         return Results.Ok(await service.UpdateAsync(userId, dto));
     }
 

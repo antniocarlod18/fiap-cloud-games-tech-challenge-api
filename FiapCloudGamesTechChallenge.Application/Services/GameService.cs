@@ -42,20 +42,20 @@ public class GameService : IGameService
 
     public async Task<GameResponseDto?> GetAsync(Guid id)
     {
-        var game = await _unitOfWork.GamesRepo.GetByIdAsync(id);
+        var game = await _unitOfWork.GamesRepo.GetWithPromotionsByIdAsync(id);
 
         if(game == null)
-            throw new ResourceNotFoundException<Game>();
+            throw new ResourceNotFoundException(nameof(Game));
 
         return game;
     }
 
-    public async Task<GameResponseDto?> UpdateAsync(Guid id, GameUpdateRequestDto gameRequestDto)
+    public async Task<GameResponseDto?> UpdateAsync(Guid id, GameRequestDto gameRequestDto)
     {
-        var game = await _unitOfWork.GamesRepo.GetByIdAsync(id);
+        var game = await _unitOfWork.GamesRepo.GetWithPromotionsByIdAsync(id);
 
         if (game == null)
-            throw new ResourceNotFoundException<Game>();
+            throw new ResourceNotFoundException(nameof(Game));
 
         var platforms = gameRequestDto.GamePlatforms
             .Select(s => (GamePlatformEnum)Enum.Parse(typeof(GamePlatformEnum), s))
@@ -70,6 +70,15 @@ public class GameService : IGameService
         game.GameVersion = gameRequestDto.GameVersion;
         game.Available = gameRequestDto.Available;
         game.DateUpdated = DateTime.UtcNow;
+
+        if(game.Price != gameRequestDto.Price)
+        {
+            var oldPrice = game.Price;
+            game.UpdatePrice(gameRequestDto.Price);
+
+            var audit = new AuditGamePrice(game, oldPrice, gameRequestDto.Price);
+            await _unitOfWork.AuditGamePriceRepo.AddAsync(audit);
+        }
 
         _unitOfWork.GamesRepo.Update(game);
         await _unitOfWork.Commit();
@@ -91,7 +100,7 @@ public class GameService : IGameService
         var game = await _unitOfWork.GamesRepo.GetByTitleAsync(title);
 
         if (game == null)
-            throw new ResourceNotFoundException<Game>();
+            throw new ResourceNotFoundException(nameof(Game));
 
         return game;
     }
@@ -104,5 +113,26 @@ public class GameService : IGameService
             return [];
 
         return listOfGames.Select(x => (GameResponseDto?)x).ToList();
+    }
+
+    public async Task<IList<GameResponseDto?>> GetAllAsync()
+    {
+        var listOfGames = await _unitOfWork.GamesRepo.GetAllAsync();
+
+        if (listOfGames == null || !listOfGames.Any())
+            return [];
+
+        return listOfGames.Select(x => (GameResponseDto?)x).ToList();
+    }
+
+    public async Task DeleteAsync(Guid id)
+    {
+        var game = await _unitOfWork.GamesRepo.GetByIdAsync(id);
+
+        if (game == null)
+            throw new ResourceNotFoundException(nameof(Game));
+
+        game.Available = false;
+        _unitOfWork.GamesRepo.Update(game);
     }
 }

@@ -2,39 +2,43 @@
 using FiapCloudGamesTechChallenge.Domain.Exceptions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Net.Mime;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace FiapCloudGamesTechChallenge.Application.Middlewares
 {
     public class ExceptionHandlerMiddleware
     {
         private readonly RequestDelegate _next;
+        private readonly ILogger<ExceptionHandlerMiddleware> _logger;
 
-        public ExceptionHandlerMiddleware(RequestDelegate next)
+        public ExceptionHandlerMiddleware(RequestDelegate next, ILogger<ExceptionHandlerMiddleware> logger)
         {
             _next = next;
+            this._logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
             try
             {
+                _logger.LogInformation("Handling request: " + context.Request.Path);
+
                 await _next(context);
+
+                _logger.LogInformation("Finished handling request. " + context.Request.Path);
             }
             catch(BaseException ex)
             {
+                _logger.Log(ex.LogLevel, ex.Message);
+
                 await HandleCustomExceptionResponseAsync(context, (int)ex.StatusCode,
                     ex.Message);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, ex.Message);
+
                 await HandleCustomExceptionResponseAsync(context, (int)HttpStatusCode.InternalServerError,
                     "Sorry! We ran into a problem. Please try again soon.");
             }
@@ -51,12 +55,7 @@ namespace FiapCloudGamesTechChallenge.Application.Middlewares
                 Message = message
             };
 
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            var json = JsonSerializer.Serialize(response, options);
+            var json = JsonSerializer.Serialize(response);
             await context.Response.WriteAsync(json);
         }
     }

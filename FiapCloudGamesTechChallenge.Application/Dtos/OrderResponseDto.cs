@@ -9,7 +9,7 @@ public class OrderResponseDto
     public Guid UserId { get; set; }
     public IList<Guid> Games { get; set; } = [];
     public decimal Price { get; set; }
-    public OrderStatusEnum Status { get; set; }
+    public string Status { get; set; } = "";
     public DateTime DateCreated { get; set; }
 
     public static implicit operator OrderResponseDto?(Order? order)
@@ -19,9 +19,9 @@ public class OrderResponseDto
         {
             Id = order.Id,
             UserId = order.User.Id,
-            Games = order.Games.Select(g => g.Id).ToList(),
+            Games = order.Games.Select(g => g.Game.Id).ToList(),
             Price = order.Price,
-            Status = order.Status,
+            Status = order.Status.ToString(),
             DateCreated = order.DateCreated
         };
     }

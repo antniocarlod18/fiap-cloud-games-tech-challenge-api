@@ -16,7 +16,7 @@ public static class AuditEndpoints
             .RequireAuthorization(policy => policy.RequireRole("Admin"));
 
         endpoints.MapGet("/audits/games/{gameId}/prices", GetAuditsPriceByGameAsync)
-            .RequireAuthorization(policy => policy.RequireRole("Admin")); ;
+            .RequireAuthorization(policy => policy.RequireRole("Admin"));
 
         return endpoints;
     } 

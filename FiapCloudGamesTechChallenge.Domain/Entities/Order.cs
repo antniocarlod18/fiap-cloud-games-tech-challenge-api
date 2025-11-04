@@ -17,7 +17,7 @@ public class Order : EntityBase
     public Order(User user) : base()
     {
         if(!user.GameCart.Any()) 
-            new Exception(); //TODO custom exception
+            throw new CannotCreateAnOrderWithoutItemsException(); 
 
         User = user;
 

@@ -32,17 +32,18 @@ public class Promotion : EntityBase
 
     public void AddGame(Game game)
     {
-        if (Games.Contains(game))
-            throw new InvalidOperationAddingGameToCartException(); //TODO custom exception
+        if (Games.Any(g => g.Id == game.Id))
+            throw new InvalidOperationAddingGameToCartException(); 
 
         Games.Add(game);
     }
 
     public void RemoveGame(Game game)
     {
-        if (Games.Contains(game))
+        var gameToRemove = Games.FirstOrDefault(g => g.Id == game.Id);
+        if (gameToRemove != null)
         {
-            Games.Remove(game);
+            Games.Remove(gameToRemove);
         }
     }
 }

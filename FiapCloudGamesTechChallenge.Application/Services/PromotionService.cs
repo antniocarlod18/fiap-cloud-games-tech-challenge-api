@@ -32,71 +32,80 @@ public class PromotionService : IPromotionService
 
     public async Task<PromotionResponseDto?> GetAsync(Guid id)
     {
-        var promotion = await _unitOfWork.PromotionsRepo.GetByIdAsync(id);
+        var promotion = await _unitOfWork.PromotionsRepo.GetDetailedByIdAsync(id);
 
         if (promotion == null)
-            throw new ResourceNotFoundException<Promotion>();
+            throw new ResourceNotFoundException(nameof(Promotion));
 
         return promotion;
     }
 
-    public async Task<IList<PromotionResponseDto>> GetActiveAsync()
+    public async Task<IList<PromotionResponseDto?>> GetAllAsync()
+    {
+        var promotions = await _unitOfWork.PromotionsRepo.GetAllAsync();
+
+        if (promotions == null || !promotions.Any())
+            return [];
+
+        return promotions.Select(x => (PromotionResponseDto?)x).ToList();
+    }
+
+    public async Task<IList<PromotionResponseDto?>> GetActiveAsync()
     {
         var promotions = await _unitOfWork.PromotionsRepo.GetActiveAsync();
 
         if (promotions == null || !promotions.Any())
             return [];
 
-        return (IList<PromotionResponseDto>)promotions;
+        return promotions.Select(x => (PromotionResponseDto?)x).ToList();
     }
 
-    public async Task<PromotionResponseDto?> DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
         var promotion = await _unitOfWork.PromotionsRepo.GetByIdAsync(id);
 
         if (promotion == null)
-            throw new ResourceNotFoundException<Promotion>();
+            throw new ResourceNotFoundException(nameof(Promotion));
 
         _unitOfWork.PromotionsRepo.Delete(promotion);
-
-        return promotion;
+        await _unitOfWork.Commit();
     }
 
     public async Task<PromotionResponseDto?> AddGameToPromotionAsync(Guid id, Guid gameId)
     {
-        var promotion = await _unitOfWork.PromotionsRepo.GetByIdAsync(id);
+        var promotion = await _unitOfWork.PromotionsRepo.GetDetailedByIdAsync(id);
 
         if (promotion == null)
-            throw new ResourceNotFoundException<Promotion>();
+            throw new ResourceNotFoundException(nameof(Promotion));
 
         var game = await _unitOfWork.GamesRepo.GetByIdAsync(gameId);
 
         if (game == null)
-            throw new ResourceNotFoundException<Promotion>();
+            throw new ResourceNotFoundException(nameof(Game));
 
         promotion.AddGame(game);
-
+        _unitOfWork.GamesRepo.Attach(game);
         _unitOfWork.PromotionsRepo.Update(promotion);
-
+        await _unitOfWork.Commit();
         return promotion;
     }
 
     public async Task<PromotionResponseDto?> RemoveGameToPromotionAsync(Guid id, Guid gameId)
     {
-        var promotion = await _unitOfWork.PromotionsRepo.GetByIdAsync(id);
+        var promotion = await _unitOfWork.PromotionsRepo.GetDetailedByIdAsync(id);
 
         if (promotion == null)
-            throw new ResourceNotFoundException<Promotion>();
+            throw new ResourceNotFoundException(nameof(Promotion));
 
         var game = await _unitOfWork.GamesRepo.GetByIdAsync(gameId);
 
         if (game == null)
-            throw new ResourceNotFoundException<Promotion>();
+            throw new ResourceNotFoundException(nameof(Game));
 
         promotion.RemoveGame(game);
-
+        _unitOfWork.GamesRepo.Attach(game);
         _unitOfWork.PromotionsRepo.Update(promotion);
-
+        await _unitOfWork.Commit();
         return promotion;
     }
 }

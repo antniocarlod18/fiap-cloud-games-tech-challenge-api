@@ -1,6 +1,8 @@
 using FiapCloudGamesTechChallenge.Application.Dtos;
 using FiapCloudGamesTechChallenge.Application.Services.Interfaces;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace FiapCloudGamesTechChallenge.Api.Endpoints;
 
@@ -17,6 +19,9 @@ public static class PromotionEndpoints
         endpoints.MapGet("/promotions/active", GetActiveAsync)
             .RequireAuthorization(policy => policy.RequireRole("Admin"));
 
+        endpoints.MapGet("/promotions", GetAllAsync)
+            .RequireAuthorization(policy => policy.RequireRole("Admin"));
+
         endpoints.MapDelete("/promotions/{id}", DeleteAsync)
             .RequireAuthorization(policy => policy.RequireRole("Admin"));
 
@@ -29,8 +34,15 @@ public static class PromotionEndpoints
         return endpoints;
     }
 
-    public static async Task<IResult> AddAsync(PromotionRequestDto dto, IPromotionService service)
+    public static async Task<IResult> AddAsync(PromotionRequestDto dto, IPromotionService service, IValidator<PromotionRequestDto> validator)
     {
+        var validationResult = await validator.ValidateAsync(dto);
+
+        if (!validationResult.IsValid)
+        {
+            return Results.ValidationProblem(validationResult.ToDictionary());
+        }
+
         var created = await service.AddAsync(dto);
         return Results.Created($"/promotions/{created?.Id}", created);
     }
@@ -45,9 +57,15 @@ public static class PromotionEndpoints
         return Results.Ok(await service.GetActiveAsync());
     }
 
+    public static async Task<IResult> GetAllAsync(IPromotionService service)
+    {
+        return Results.Ok(await service.GetAllAsync());
+    }
+
     public static async Task<IResult> DeleteAsync(Guid id, IPromotionService service)
     {
-        return Results.Ok(await service.DeleteAsync(id));
+        await service.DeleteAsync(id);
+        return Results.Ok();
     }
 
     public static async Task<IResult> AddGameToPromotionAsync(Guid id, Guid gameId, IPromotionService service)

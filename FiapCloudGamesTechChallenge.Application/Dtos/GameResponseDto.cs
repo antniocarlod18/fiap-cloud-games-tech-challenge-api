@@ -9,6 +9,7 @@ namespace FiapCloudGamesTechChallenge.Application.Dtos
         public string Genre { get; set; }
         public string? Description { get; set; }
         public decimal Price { get; set; }
+        public decimal PriceWithDiscount { get; set; }
         public string? Developer { get; set; }
         public string? Distributor { get; set; }
         public IList<string> GamePlatforms { get; set; } = [];
@@ -27,6 +28,7 @@ namespace FiapCloudGamesTechChallenge.Application.Dtos
                 Title = game.Title,
                 Genre = game.Genre,
                 Description = game.Description,
+                PriceWithDiscount = game.GetPriceWithDiscount(),
                 Price = game.Price,
                 Developer = game.Developer,
                 Distributor = game.Distributor,

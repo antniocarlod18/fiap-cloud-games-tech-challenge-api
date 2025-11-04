@@ -18,6 +18,7 @@ public class GameRepository : Repository<Game>, IGameRepository
     {
         return await _context.Games
             .AsNoTracking()
+            .Include(g => g.Promotions)
             .FirstOrDefaultAsync(g => g.Title == title);
     }
 
@@ -25,7 +26,16 @@ public class GameRepository : Repository<Game>, IGameRepository
     {
         return await _context.Games
             .AsNoTracking()
+            .Include(g => g.Promotions)
             .Where(g => g.Available == true)
+            .ToListAsync();
+    }
+
+    public new async Task<IList<Game>> GetAllAsync()
+    {
+        return await _context.Games
+            .AsNoTracking()
+            .Include(g => g.Promotions)
             .ToListAsync();
     }
 
@@ -33,7 +43,15 @@ public class GameRepository : Repository<Game>, IGameRepository
     {
         return await _context.Games
             .AsNoTracking()
+            .Include(g => g.Promotions)
             .Where(g => g.Genre == genre)
             .ToListAsync();
+    }
+
+    public async Task<Game?> GetWithPromotionsByIdAsync(Guid idGame)
+    {
+        return await _context.Games
+            .Include(g => g.Promotions)
+            .FirstOrDefaultAsync(g => g.Id == idGame);
     }
 }

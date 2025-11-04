@@ -21,7 +21,7 @@ public class PromotionResponseDto
             StartDate = p.StartDate,
             EndDate = p.EndDate,
             Active = p.Active,
-            Games = (IList<GameResponseDto>)p.Games
+            Games = p.Games.Select(o => (GameResponseDto)o!).ToList()
         };
     }
 }

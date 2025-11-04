@@ -16,46 +16,46 @@ public class AuditService : IAuditService
         this._unitOfWork = unitOfWork;
     }
 
-    public async Task<IList<AuditGameUserCollectionResponseDto>> GetByUserAsync(Guid userId, string? collection)
+    public async Task<IList<AuditGameUserCollectionResponseDto?>> GetByUserAsync(Guid userId, string? collection)
     {
         var user = await _unitOfWork.UsersRepo.GetByIdAsync(userId);
         
         if(user == null)
-            throw new ResourceNotFoundException<User>();
+            throw new ResourceNotFoundException(nameof(User));
 
         var listOfAudits = await _unitOfWork.AuditGameUsersRepo.GetByUserAsync(userId, Convert(collection));
 
         if (listOfAudits == null || !listOfAudits.Any()) return [];
 
-        return (IList<AuditGameUserCollectionResponseDto>)listOfAudits;
+        return listOfAudits.Select(x => (AuditGameUserCollectionResponseDto?)x).ToList();
     }
 
-    public async Task<IList<AuditGameUserCollectionResponseDto>> GetByGameAsync(Guid gameId, string? collection)
+    public async Task<IList<AuditGameUserCollectionResponseDto?>> GetByGameAsync(Guid gameId, string? collection)
     {
         var game = await _unitOfWork.GamesRepo.GetByIdAsync(gameId); 
 
         if (game == null)
-            throw new ResourceNotFoundException<Game>();
+            throw new ResourceNotFoundException(nameof(Game));
 
         var listOfAudits = await _unitOfWork.AuditGameUsersRepo.GetByGameAsync(gameId, Convert(collection));
 
         if (listOfAudits == null || !listOfAudits.Any()) return [];
 
-        return (IList<AuditGameUserCollectionResponseDto>)listOfAudits;
+        return listOfAudits.Select(x => (AuditGameUserCollectionResponseDto?)x).ToList();
     }
 
-    public async Task<IList<AuditGamePriceResponseDto>> GetByGameAsync(Guid gameId)
+    public async Task<IList<AuditGamePriceResponseDto?>> GetByGameAsync(Guid gameId)
     {
         var game = await _unitOfWork.GamesRepo.GetByIdAsync(gameId);
 
         if (game == null)
-            throw new ResourceNotFoundException<Game>();
+            throw new ResourceNotFoundException(nameof(Game));
 
         var listOfAudits = await _unitOfWork.AuditGamePriceRepo.GetByGameAsync(gameId);
 
         if (listOfAudits == null || !listOfAudits.Any()) return [];
 
-        return (IList<AuditGamePriceResponseDto>)listOfAudits;
+        return listOfAudits.Select(x => (AuditGamePriceResponseDto?)x).ToList();
     }
 
     private AuditGameUserCollectionEnum? Convert(string? collection)

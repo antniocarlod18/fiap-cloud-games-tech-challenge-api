@@ -20,10 +20,4 @@ namespace FiapCloudGamesTechChallenge.Application.Dtos
         public string? GameVersion { get; set; }
         public bool Available { get; set; }
     }
-
-    public class GameUpdateRequestDto : GameRequestDto
-    {
-        [JsonIgnore] 
-        public new decimal Price { get; set; }
-    }
 }

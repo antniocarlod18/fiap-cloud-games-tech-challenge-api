@@ -30,7 +30,7 @@ namespace FiapCloudGamesTechChallenge.Api.Authorize
                 return;
             }
 
-            if ((userRole == "User" || userRole == "LockUser") && userIdFromToken != null)
+            if ((userRole == "User") && userIdFromToken != null)
             {
                 string? userIdFromRequest = null;
 

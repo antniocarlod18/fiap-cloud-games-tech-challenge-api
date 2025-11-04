@@ -8,7 +8,7 @@ public class Game : EntityBase
     public required string Title { get; set; }
     public required string Genre { get; set; } 
     public string? Description { get; set; }
-    public required decimal Price { get; set; }
+    public required decimal Price { get ; set; }
     public string? Developer { get; set; }
     public string? Distributor { get; set; }
     public required IList<GamePlatformEnum> GamePlatforms { get; set; }

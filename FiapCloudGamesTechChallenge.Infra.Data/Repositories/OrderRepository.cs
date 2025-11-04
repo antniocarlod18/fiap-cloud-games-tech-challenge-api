@@ -19,8 +19,21 @@ public class OrderRepository : Repository<Order>, IOrderRepository
         return await _context.Orders
             .AsNoTracking()
             .Include(o => o.Games)
+                .ThenInclude(og => og.Game)
             .Include(o => o.User)
             .Where(o => o.User.Id == userId)
             .ToListAsync();
+    }
+
+    public async Task<Order?> GetDetailedByIdAsync(Guid id)
+    {
+        return await _context.Orders
+            .Include(o => o.Games)
+                .ThenInclude(og => og.Game)
+            .Include(o => o.User)
+                .ThenInclude(u => u.GameLibrary)
+            .Include(o => o.User)
+                .ThenInclude(u => u.GameCart)
+            .FirstOrDefaultAsync(o => o.Id == id);
     }
 }
