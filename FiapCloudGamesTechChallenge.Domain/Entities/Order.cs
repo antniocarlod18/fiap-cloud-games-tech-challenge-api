@@ -34,7 +34,7 @@ public class Order : EntityBase
     }
 
     [SetsRequiredMembers]
-    protected Order()
+    public Order()
     {
     }
 
