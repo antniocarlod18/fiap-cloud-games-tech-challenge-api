@@ -20,12 +20,11 @@ Este projeto foi criado como parte do **FIAP Tech Challenge**, aplicando conceit
 
 ## 🧩 Estrutura do Projeto
 
-src/
-├── fiap-cloud-games-tech-challenge-api # Camada de apresentação (Minimal API)
-├── Application # Casos de uso, DTOs, Handlers
-├── Domain # Entidades e regras de negócio (DDD)
-├── Infrastructure # Repositórios e persistência (EF Core / MySQL)
-└── Tests # Testes unitários (xUnit)
+├── **FiapCloudGamesTechChallenge.Api # Camada de apresentação (Minimal API)**  
+├── **FiapCloudGamesTechChallenge.Application # Casos de uso, DTOs, Handlers**  
+├── **FiapCloudGamesTechChallenge.Domain # Entidades e regras de negócio (DDD)**  
+├── **FiapCloudGamesTechChallenge.Infra.Data # Repositórios e persistência (EF Core / MySQL)**  
+└── **FiapCloudGamesTechChallenge.Tests # Testes unitários (xUnit)**  
 
 ## ⚙️ Pré-requisitos
 
@@ -46,7 +45,7 @@ Antes de rodar o projeto, verifique se possui instalado:
    CREATE DATABASE FiapCloudGames;
 
 2. Configure o arquivo appsettings.Development.json localizado em \FiapCloudGamesTechChallenge.Api\appsettings.Development.json:
-
+```json
 {
   "Logging": {
     "LogLevel": {
@@ -63,7 +62,7 @@ Antes de rodar o projeto, verifique se possui instalado:
     "Audience": "https://localhost:7121/"
   }
 }
-
+```
 3. Aplique as migrations do Entity Framework Core com os comandos:
 
 dotnet ef database update
