@@ -20,12 +20,11 @@ Este projeto foi criado como parte do **FIAP Tech Challenge**, aplicando conceit
 
 ## 🧩 Estrutura do Projeto
 
-src/
-├── fiap-cloud-games-tech-challenge-api # Camada de apresentação (Minimal API)
-├── Application # Casos de uso, DTOs, Handlers
-├── Domain # Entidades e regras de negócio (DDD)
-├── Infrastructure # Repositórios e persistência (EF Core / MySQL)
-└── Tests # Testes unitários (xUnit)
+├── **FiapCloudGamesTechChallenge.Api # Camada de apresentação (Minimal API)**
+├── **FiapCloudGamesTechChallenge.Application # Casos de uso, DTOs, Handlers
+├── **FiapCloudGamesTechChallenge.Domain # Entidades e regras de negócio (DDD)**
+├── **FiapCloudGamesTechChallenge.Infra.Data # Repositórios e persistência (EF Core / MySQL)**
+└── **FiapCloudGamesTechChallenge.Tests # Testes unitários (xUnit)**
 
 ## ⚙️ Pré-requisitos
 
